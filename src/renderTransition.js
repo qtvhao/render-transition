@@ -90,8 +90,26 @@ let renderTransition = async (translated, transitionImage) => {
             }
         })
             .toFile('/tmp/inner-text.png')
+        // add gaussian blur to the text
+        await sharp({
+            text: {
+                text: '<span foreground="#FFFFFF">' + translated + '</span>',
+                //   resolution is 4k
+                width: 3840 * 0.8,
+                height: 2160 * 0.8,
+                font,
+                rgba: true,
+            }
+        })
+            .blur(50)
+            .toFile('/tmp/inner-text-blurred.png')
+        
         await sharp(resizedTransitionImage)
             .composite([
+                {
+                    input: '/tmp/inner-text-blurred.png',
+                    gravity: 'center'
+                },
                 {
                     input: '/tmp/inner-text.png',
                     gravity: 'center'
