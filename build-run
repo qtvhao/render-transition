@@ -2,6 +2,7 @@
 
 set -xeo pipefail
 
+rm ./output/* || true
 docker build -t render-transition .
 docker run \
     -v ./output:/app/storage/images/ \
