@@ -63,6 +63,10 @@ var vibrantDarkColors = [
   ];
   
 let renderTransition = async (translated, transitionImage) => {
+    let sentences = translated.split(". ")
+    translated = sentences.map(sentence => {
+        return "- " + sentence
+    }).join(".\n")
     console.log("Rendering transition")
     console.log("Translated:", translated)
     console.log("Transition Image:", transitionImage)
