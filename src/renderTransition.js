@@ -61,11 +61,11 @@ var vibrantDarkColors = [
     "880E4F",
     "9C27B0",
   ];
-  
-let renderTransition = async (translated, transitionImage) => {
+
+let renderTransition = async (translated, transitionImage, id) => {
     let sentences = translated.split(". ")
     translated = sentences.map(sentence => {
-        return "- " + sentence
+        return " - " + sentence
     }).join(".\n")
     console.log("Rendering transition")
     console.log("Translated:", translated)
@@ -73,7 +73,9 @@ let renderTransition = async (translated, transitionImage) => {
     let transitionImageExists = fs.existsSync(transitionImage)
     if (transitionImageExists) {
         console.log("Transition image exists")
-        let resizedTransitionImage = "/tmp/resized-transition.jpg"
+        let resizedTransitionImage = "/tmp/resized-transition-" + id + ".jpg"
+        let innerText = "/tmp/inner-text-" + id + ".png"
+        let innerTextBlurred = "/tmp/inner-text-blurred-" + id + ".png"
         await sharp(transitionImage)
             .resize(3840, 2160)
             .toFile(resizedTransitionImage)
@@ -89,7 +91,7 @@ let renderTransition = async (translated, transitionImage) => {
                 rgba: true,
             }
         })
-            .toFile('/tmp/inner-text.png')
+            .toFile(innerText)
         // add gaussian blur to the text
         await sharp({
             text: {
@@ -102,20 +104,20 @@ let renderTransition = async (translated, transitionImage) => {
             }
         })
             .blur(50)
-            .toFile('/tmp/inner-text-blurred.png')
+            .toFile(innerTextBlurred)
         
         await sharp(resizedTransitionImage)
             .composite([
                 {
-                    input: '/tmp/inner-text-blurred.png',
+                    input: innerTextBlurred,
                     gravity: 'center'
                 },
                 {
-                    input: '/tmp/inner-text.png',
+                    input: innerText,
                     gravity: 'center'
                 }
             ])
-            .toFile('/app/storage/images/transition-' + font + '-' + color + '.jpg')
+            .toFile('/app/storage/images/transition-' + id + '-' + font + '-' + color + '.jpg')
     } else {
         console.log("Transition image does not exist")
     }
