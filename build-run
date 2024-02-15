@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -xeo pipefail
+
+docker build -t render-transition .
+docker run \
+    -v ./output:/app/storage/images/ \
+    --rm -it \
+    render-transition

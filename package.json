@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/qtvhao/render-transition/issues"
   },
-  "homepage": "https://github.com/qtvhao/render-transition#readme"
+  "homepage": "https://github.com/qtvhao/render-transition#readme",
+  "dependencies": {
+    "sharp": "^0.33.2"
+  }
 }

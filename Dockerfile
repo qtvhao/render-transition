@@ -6,7 +6,7 @@ RUN apk add --update nodejs
 RUN apk add --update npm
 
 WORKDIR /app
-COPY package.json .
+COPY package*.json .
 RUN npm install
 
 COPY ./src .
