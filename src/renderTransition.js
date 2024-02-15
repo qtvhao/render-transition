@@ -63,6 +63,14 @@ var vibrantDarkColors = [
   ];
 
 let renderTransition = async (translated, transitionImage, id) => {
+    let yearMonthDay = new Date().toISOString().split('T')[0] // 2021-08-01
+    let outputFolder = "/app/storage/images/" + yearMonthDay
+    if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder)
+    }
+    let font = getRandomFontStyle();
+    var color = vibrantDarkColors[Math.floor(Math.random() * vibrantDarkColors.length)];
+
     let sentences = translated.split(". ")
     translated = sentences.map(sentence => {
         return " - " + sentence
@@ -71,16 +79,15 @@ let renderTransition = async (translated, transitionImage, id) => {
     console.log("Translated:", translated)
     console.log("Transition Image:", transitionImage)
     let transitionImageExists = fs.existsSync(transitionImage)
+    let outputFile = outputFolder + "/transition-" + id + "-" + font + "-" + color + ".jpg"
+    let resizedTransitionImage = "/tmp/resized-transition-" + id + ".jpg"
+    let innerText = "/tmp/inner-text-" + id + ".png"
+    let innerTextBlurred = "/tmp/inner-text-blurred-" + id + ".png"
     if (transitionImageExists) {
         console.log("Transition image exists")
-        let resizedTransitionImage = "/tmp/resized-transition-" + id + ".jpg"
-        let innerText = "/tmp/inner-text-" + id + ".png"
-        let innerTextBlurred = "/tmp/inner-text-blurred-" + id + ".png"
         await sharp(transitionImage)
             .resize(3840, 2160)
             .toFile(resizedTransitionImage)
-        let font = getRandomFontStyle();
-        var color = vibrantDarkColors[Math.floor(Math.random() * vibrantDarkColors.length)];
         await sharp({
             text: {
                 text: '<span foreground="#' + color + '">' + translated + '</span>',
@@ -105,12 +112,6 @@ let renderTransition = async (translated, transitionImage, id) => {
         })
             .blur(50)
             .toFile(innerTextBlurred)
-        let yearMonthDay = new Date().toISOString().split('T')[0] // 2021-08-01
-        let outputFolder = "/app/storage/images/" + yearMonthDay
-        if (!fs.existsSync(outputFolder)) {
-            fs.mkdirSync(outputFolder)
-        }
-        let outputFile = outputFolder + "/transition-" + id + "-" + font + "-" + color + ".jpg"
         await sharp(resizedTransitionImage)
             .composite([
                 {
@@ -126,6 +127,8 @@ let renderTransition = async (translated, transitionImage, id) => {
     } else {
         console.log("Transition image does not exist")
     }
+
+    return outputFile
 }
 module.exports = {
     renderTransition
