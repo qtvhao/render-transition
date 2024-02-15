@@ -105,7 +105,12 @@ let renderTransition = async (translated, transitionImage, id) => {
         })
             .blur(50)
             .toFile(innerTextBlurred)
-        
+        let yearMonthDay = new Date().toISOString().split('T')[0] // 2021-08-01
+        let outputFolder = "/app/storage/images/" + yearMonthDay
+        if (!fs.existsSync(outputFolder)) {
+            fs.mkdirSync(outputFolder)
+        }
+        let outputFile = outputFolder + "/transition-" + id + "-" + font + "-" + color + ".jpg"
         await sharp(resizedTransitionImage)
             .composite([
                 {
@@ -117,7 +122,7 @@ let renderTransition = async (translated, transitionImage, id) => {
                     gravity: 'center'
                 }
             ])
-            .toFile('/app/storage/images/transition-' + id + '-' + font + '-' + color + '.jpg')
+            .toFile(outputFile)
     } else {
         console.log("Transition image does not exist")
     }
