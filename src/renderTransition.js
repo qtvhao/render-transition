@@ -64,9 +64,9 @@ var vibrantDarkColors = [
 
 let renderTransition = async (translated, transitionImage, id) => {
     let yearMonthDay = new Date().toISOString().split('T')[0] // 2021-08-01
-    let outputFolder = "/app/storage/images/" + yearMonthDay
+    let outputFolder = "/app/storage/images/transitions/" + yearMonthDay
     if (!fs.existsSync(outputFolder)) {
-        fs.mkdirSync(outputFolder)
+        fs.mkdirSync(outputFolder, { recursive: true });
     }
     let font = getRandomFontStyle();
     var color = vibrantDarkColors[Math.floor(Math.random() * vibrantDarkColors.length)];
