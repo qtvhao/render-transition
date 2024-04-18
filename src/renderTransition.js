@@ -88,9 +88,11 @@ let renderTransition = async (translated, transitionImage, id) => {
         await sharp(transitionImage)
             .resize(3840, 2160)
             .toFile(resizedTransitionImage)
+        let text = '<span foreground="#' + color + '">' + translated + '</span>';
+        console.log('text: ' , text)
         await sharp({
             text: {
-                text: '<span foreground="#' + color + '">' + translated + '</span>',
+                text,
                 //   resolution is 4k
                 width: 3840 * 0.8,
                 height: 2160 * 0.8,
