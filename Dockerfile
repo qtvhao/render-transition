@@ -9,7 +9,7 @@ FROM ghcr.io/qtvhao/debian:main
 # RUN apt-get update && apt-get install -y 
 # WORKDIR /app
 COPY package*.json yarn.lock ./
-RUN yarn
+RUN yarn add sharp --ignore-engines
 
 COPY ./src .
 
