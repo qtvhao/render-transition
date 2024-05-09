@@ -1,5 +1,5 @@
 let fs = require('fs');
-let sharp = require('sharp');
+// let sharp = require('sharp');
 function getRandomFontStyle() {
     var fontStyles = [
       'MediumItalic', 'Italic', 'Light', 'BlackItalic', 'Alternates-BoldItalic', 'Alternates-Bold', 'Alternates-LightItalic', 'Alternates-MediumItalic', 'SemiBold', 'Thin', 'Alternates-ExtraBold', 'Black', 'Regular', 'SemiBoldItalic', 'Alternates-ExtraBoldItalic', 'Bold', 'ExtraBoldItalic', 'Alternates-ExtraLightItalic', 'Alternates-Black', 'Alternates-ThinItalic', 'Alternates-ExtraLight', 'Medium', 'ExtraBold', 'Alternates-SemiBold', 'Alternates-BlackItalic', 'LightItalic', 'Alternates-SemiBoldItalic', 'Alternates-Light', 'ExtraLight', 'ThinItalic', 'ExtraLightItalic', 'BoldItalic', 'Alternates-Thin', 'Alternates-Medium', 'Alternates-Regular', 'Alternates-Italic',
@@ -85,9 +85,14 @@ let renderTransition = async (translated, transitionImage, id) => {
     let innerTextBlurred = "/tmp/inner-text-blurred-" + id + ".png"
     if (transitionImageExists) {
         console.log("Transition image exists")
-        await sharp(transitionImage)
-            .resize(3840, 2160)
-            .toFile(resizedTransitionImage)
+        let imaginaryService = process.env.DEBUG ? 'imaginary' : 'localhost'
+        console.log('Resizing transition image. File: ', transitionImage)
+        let fetched = await fetch(`http://${imaginaryService}:9000/resize?width=3840&height=2160&file=${transitionImage}`)
+        let resized = await fetched.arrayBuffer()
+        fs.writeFileSync(resizedTransitionImage, Buffer.from(resized));
+        // await sharp(transitionImage)
+        //     .resize(3840, 2160)
+        //     .toFile(resizedTransitionImage)
         let text = '<span foreground="#' + color + '">' + translated + '</span>';
         console.log('text: ' , text)
         await sharp({
