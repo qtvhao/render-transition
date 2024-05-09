@@ -1,0 +1,52 @@
+version: "3"
+services:
+  # "/app/storage/images/white_fur_texture_hd/0-68-3252013717-68-i0.wp.com-68-white-eco-fur-pattern-background-free-photo.png"
+  imaginary:
+    stop_grace_period: 1s
+    image: ghcr.io/qtvhao/imaginary:master
+    volumes:
+      - ./src/images/:/app/storage/images/
+    restart: always
+    entrypoint: ["imaginary"]
+    environment:
+      - PORT=9001
+    command: ["-mount", "/app/storage/images/", "-enable-url-source"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/health"]
+      interval: 10s
+      timeout: 15s
+      retries: 3
+  imaginary-tmp:
+    stop_grace_period: 1s
+    image: ghcr.io/qtvhao/imaginary:master
+    volumes:
+      - ./tmp/:/tmp/
+    restart: always
+    entrypoint: ["imaginary"]
+    command: ["-mount", "/tmp/", "-enable-url-source"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 10s
+      timeout: 15s
+      retries: 3
+
+  main:
+    stop_grace_period: 1s
+    depends_on:
+      imaginary-tmp:
+        condition: service_healthy
+      imaginary:
+        condition: service_healthy
+    build: .
+    volumes:
+      - ./src/images/:/app/storage/images/
+      - ./tmp/:/tmp/
+      - ./src/renderTransition.js:/app/renderTransition.js
+    environment:
+      - DEBUG=true
+    entrypoint: sh
+    command: [
+      "-c",
+      "node app.js"
+    ]
+  
