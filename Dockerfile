@@ -13,6 +13,6 @@ RUN yarn add sharp --ignore-engines
 
 COPY ./src .
 
-RUN node app.js
+# RUN node app.js
 
 CMD ["node", "app.js"]
