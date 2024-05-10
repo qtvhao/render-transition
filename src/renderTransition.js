@@ -115,7 +115,7 @@ let renderTransition = async (translated, transitionImage, id) => {
         console.log('Resized transition image:', resizedTransitionImage, fs.readFileSync(resizedTransitionImage).length)
         console.log('Inner text:', innerText, fs.readFileSync(innerText).length)
         console.log('Inner text blurred:', innerTextBlurred, fs.readFileSync(innerTextBlurred).length)
-        console.log('Composite file:', compositeFile, fs.readFileSync(compositeFile).length)
+        console.log('Composite file:', compositeFile)
         await sharp(resizedTransitionImage)
             .composite([
                 {
