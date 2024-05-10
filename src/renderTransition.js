@@ -112,6 +112,10 @@ let renderTransition = async (translated, transitionImage, id) => {
         let fetchedBlurred = await fetch(`http://${imaginaryService}:9000/blur?sigma=50&file=${innerText.replace('/tmp/', '')}`)
         let blurred = await fetchedBlurred.arrayBuffer()
         fs.writeFileSync(innerTextBlurred, Buffer.from(blurred));
+        console.log('Resized transition image:', resizedTransitionImage, fs.readFileSync(resizedTransitionImage).length)
+        console.log('Inner text:', innerText, fs.readFileSync(innerText).length)
+        console.log('Inner text blurred:', innerTextBlurred, fs.readFileSync(innerTextBlurred).length)
+        console.log('Composite file:', compositeFile, fs.readFileSync(compositeFile).length)
         await sharp(resizedTransitionImage)
             .composite([
                 {
