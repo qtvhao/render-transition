@@ -62,7 +62,11 @@ var vibrantDarkColors = [
     "9C27B0",
 ];
 
-let renderTransition = async (translated, transitionImage, id) => {
+let renderTransition = async (translated, transitionImage, id, job) => {
+    job = job ?? {
+        log: (message) => console.log(message)
+    }
+    job.log('Rendering transition')
     let yearMonthDay = new Date().toISOString().split('T')[0] // 2021-08-01
     let outputFolder = "/app/storage/images/transitions/" + yearMonthDay
     if (!fs.existsSync(outputFolder)) {
@@ -75,9 +79,9 @@ let renderTransition = async (translated, transitionImage, id) => {
     translated = sentences.map(sentence => {
         return " - " + sentence
     }).join(".\n")
-    console.log("Rendering transition")
-    console.log("Translated:", translated)
-    console.log("Transition Image:", transitionImage)
+    job.log("Rendering transition")
+    job.log("Translated:", translated)
+    job.log("Transition Image:", transitionImage)
     let transitionImageExists = fs.existsSync(transitionImage)
     let outputFile = outputFolder + "/transition-" + id + "-" + font + "-" + color + ".jpg"
     let resizedTransitionImage = "/tmp/resized-transition-" + id + ".jpg"
@@ -85,10 +89,10 @@ let renderTransition = async (translated, transitionImage, id) => {
     let innerTextBlurred = "/tmp/inner-text-blurred-" + id + ".png"
     let compositeFile = '/tmp/composite-' + id + '.jpg'
     if (transitionImageExists) {
-        console.log("Transition image exists")
+        job.log("Transition image exists")
         let imaginaryImagesService = process.env.DEBUG ? 'imaginary:9001' : 'localhost:9001'
         let imaginaryService = process.env.DEBUG ? 'imaginary-tmp' : 'localhost'
-        console.log('Resizing transition image. File: ', transitionImage)
+        job.log('Resizing transition image. File: ', transitionImage)
         let fetched = await fetch(`http://${imaginaryImagesService}/resize?width=2560&height=1440&nocrop=false&file=${transitionImage.replace('/app/storage/images/', '')}`)
         let resized = await fetched.arrayBuffer()
         fs.writeFileSync(resizedTransitionImage, Buffer.from(resized));
@@ -96,7 +100,7 @@ let renderTransition = async (translated, transitionImage, id) => {
         //     .resize(3840, 2160)
         //     .toFile(resizedTransitionImage)
         let text = '<span foreground="#' + color + '">' + translated + '</span>';
-        console.log('text: ', text)
+        job.log('text: ', text)
         await sharp({
             text: {
                 text,
@@ -112,10 +116,10 @@ let renderTransition = async (translated, transitionImage, id) => {
         let fetchedBlurred = await fetch(`http://${imaginaryService}:9000/blur?sigma=50&file=${innerText.replace('/tmp/', '')}`)
         let blurred = await fetchedBlurred.arrayBuffer()
         fs.writeFileSync(innerTextBlurred, Buffer.from(blurred));
-        console.log('Resized transition image:', resizedTransitionImage, fs.readFileSync(resizedTransitionImage).length)
-        console.log('Inner text:', innerText, fs.readFileSync(innerText).length)
-        console.log('Inner text blurred:', innerTextBlurred, fs.readFileSync(innerTextBlurred).length)
-        console.log('Composite file:', compositeFile)
+        job.log('Resized transition image:', resizedTransitionImage, fs.readFileSync(resizedTransitionImage).length)
+        job.log('Inner text:', innerText, fs.readFileSync(innerText).length)
+        job.log('Inner text blurred:', innerTextBlurred, fs.readFileSync(innerTextBlurred).length)
+        job.log('Composite file:', compositeFile)
         await sharp(resizedTransitionImage)
             .composite([
                 {
@@ -132,7 +136,7 @@ let renderTransition = async (translated, transitionImage, id) => {
 
         return outputFile;
     } else {
-        console.log("Transition image does not exist")
+        job.log("Transition image does not exist")
     }
 
     return outputFile
