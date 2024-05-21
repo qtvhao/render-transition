@@ -1,4 +1,4 @@
-FROM ghcr.io/qtvhao/debian:main
+FROM ghcr.io/qtvhao/node-20.12.2:main
 
 # # Install Node.js
 # RUN apk add --update nodejs
